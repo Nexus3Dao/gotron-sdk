@@ -44,7 +44,12 @@ func TestABIParamArray(t *testing.T) {
 }
 
 func TestABIParamArrayUint256(t *testing.T) {
-	b, err := GetPaddedParam([]Param{{"uint256[2]": []string{"100000000000000000000", "200000000000000000000"}}})
+	values := []string{"100000000000000000000", "200000000000000000000"}
+	var valueInterfaces []interface{}
+	for _, value := range values {
+		valueInterfaces = append(valueInterfaces, value)
+	}
+	b, err := GetPaddedParam([]Param{{"uint256[2]": valueInterfaces}})
 	require.Nil(t, err)
 	assert.Len(t, b, 64, fmt.Sprintf("Wrong length %d/%d", len(b), 64))
 	assert.Equal(t, "0000000000000000000000000000000000000000000000056bc75e2d6310000000000000000000000000000000000000000000000000000ad78ebc5ac6200000", hex.EncodeToString(b))
