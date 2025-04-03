@@ -80,7 +80,7 @@ func (g *GrpcClient) UpdateSettingContract(from, contractAddress string, value i
 }
 
 // TriggerConstantContract and return tx result
-func (g *GrpcClient) TriggerConstantContract(from, contractAddress, method, jsonString string) (*api.TransactionExtention, error) {
+func (g *GrpcClient) TriggerConstantContract(from, contractAddress, method, jsonString string, tAmount int64, tTokenID string, tTokenAmount int64) (*api.TransactionExtention, error) {
 	var err error
 	fromDesc := address.HexToAddress("410000000000000000000000000000000000000000")
 	if len(from) > 0 {
@@ -108,6 +108,16 @@ func (g *GrpcClient) TriggerConstantContract(from, contractAddress, method, json
 		OwnerAddress:    fromDesc.Bytes(),
 		ContractAddress: contractDesc.Bytes(),
 		Data:            dataBytes,
+	}
+	if tAmount > 0 {
+		ct.CallValue = tAmount
+	}
+	if len(tTokenID) > 0 && tTokenAmount > 0 {
+		ct.CallTokenValue = tTokenAmount
+		ct.TokenId, err = strconv.ParseInt(tTokenID, 10, 64)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return g.triggerConstantContract(ct)
